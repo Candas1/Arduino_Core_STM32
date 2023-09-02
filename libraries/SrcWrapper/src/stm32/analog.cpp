@@ -759,6 +759,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *hadc)
 #endif
 }
 
+int8_t first;
+
 /**
   * @brief  This function will set the ADC to the required value
   * @param  pin : the pin to use
@@ -809,6 +811,9 @@ uint16_t adc_read_value(PinName pin, uint32_t resolution)
   if (AdcHandle.Instance == NP) {
     return 0;
   }
+
+  if(!first){
+    first = true;
 
 #ifdef ADC_CLOCK_DIV
   AdcHandle.Init.ClockPrescaler        = ADC_CLOCK_DIV;                 /* (A)synchronous clock mode, input ADC clock divided */
@@ -975,12 +980,6 @@ uint16_t adc_read_value(PinName pin, uint32_t resolution)
   AdcChannelConf.OffsetSignedSaturation = DISABLE;                /* Signed saturation feature is not used */
 #endif
 
-  /*##-2- Configure ADC regular channel ######################################*/
-  if (HAL_ADC_ConfigChannel(&AdcHandle, &AdcChannelConf) != HAL_OK) {
-    /* Channel Configuration Error */
-    return 0;
-  }
-
 #if defined(ADC_CR_ADCAL) || defined(ADC_CR2_RSTCAL)
   /*##-2.1- Calibrate ADC then Start the conversion process ####################*/
 #if defined(ADC_CALIB_OFFSET)
@@ -995,6 +994,15 @@ uint16_t adc_read_value(PinName pin, uint32_t resolution)
     return 0;
   }
 #endif
+  
+  } 
+  // Initializer ADC only once
+
+  /*##-2- Configure ADC regular channel ######################################*/
+  if (HAL_ADC_ConfigChannel(&AdcHandle, &AdcChannelConf) != HAL_OK) {
+    /* Channel Configuration Error */
+    return 0;
+  }
 
   /*##-3- Start the conversion process ####################*/
   if (HAL_ADC_Start(&AdcHandle) != HAL_OK) {
@@ -1017,18 +1025,18 @@ uint16_t adc_read_value(PinName pin, uint32_t resolution)
     uhADCxConvertedValue = HAL_ADC_GetValue(&AdcHandle);
   }
 
-  if (HAL_ADC_Stop(&AdcHandle) != HAL_OK) {
+  //if (HAL_ADC_Stop(&AdcHandle) != HAL_OK) {
     /* Stop Conversation Error */
-    return 0;
-  }
+    //return 0;
+  //}
 
-  if (HAL_ADC_DeInit(&AdcHandle) != HAL_OK) {
-    return 0;
-  }
+  //if (HAL_ADC_DeInit(&AdcHandle) != HAL_OK) {
+    //return 0;
+  //}
 
-  if (__LL_ADC_COMMON_INSTANCE(AdcHandle.Instance) != 0U) {
-    LL_ADC_SetCommonPathInternalCh(__LL_ADC_COMMON_INSTANCE(AdcHandle.Instance), LL_ADC_PATH_INTERNAL_NONE);
-  }
+  //if (__LL_ADC_COMMON_INSTANCE(AdcHandle.Instance) != 0U) {
+    //LL_ADC_SetCommonPathInternalCh(__LL_ADC_COMMON_INSTANCE(AdcHandle.Instance), LL_ADC_PATH_INTERNAL_NONE);
+  //}
   return uhADCxConvertedValue;
 }
 #endif /* HAL_ADC_MODULE_ENABLED && !HAL_ADC_MODULE_ONLY*/
