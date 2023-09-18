@@ -1048,18 +1048,6 @@ uint16_t adc_read_value(PinName pin, uint32_t resolution)
     uhADCxConvertedValue = HAL_ADC_GetValue(&AdcHandle);
   }
 
-  //if (HAL_ADC_Stop(&AdcHandle) != HAL_OK) {
-    /* Stop Conversation Error */
-    //return 0;
-  //}
-
-  //if (HAL_ADC_DeInit(&AdcHandle) != HAL_OK) {
-    //return 0;
-  //}
-
-  //if (__LL_ADC_COMMON_INSTANCE(AdcHandle.Instance) != 0U) {
-    //LL_ADC_SetCommonPathInternalCh(__LL_ADC_COMMON_INSTANCE(AdcHandle.Instance), LL_ADC_PATH_INTERNAL_NONE);
-  //}
   return uhADCxConvertedValue;
 }
 #endif /* HAL_ADC_MODULE_ENABLED && !HAL_ADC_MODULE_ONLY*/
